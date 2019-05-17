@@ -1,4 +1,3 @@
-var gulp = require('gulp');
 //var _msbuild = require('msbuild');
 //var runSequence = require('run-sequence');
 //var nugetRestore = require('gulp-nuget-restore');
@@ -206,10 +205,11 @@ var gulp = require('gulp');
 //////		.pipe(rimraf());
 
 //////	});
-
+var gulp = require('gulp');
 var rename = require("gulp-rename");
 var header = require('gulp-header');
 var replace = require('gulp-string-replace');
+var fs = require('fs');
 
 gulp.task('srcjsmover', function(){
 	return src('src/*.js')
@@ -234,7 +234,30 @@ gulp.task('copyComponents', function() {
   .pipe(gulp.dest("../gulp/components"));
 });
 
+gulp.task('replace', function() {
+  var templatebase = JSON.parse(fs.readFileSync('template-base.json', 'utf8'));
+  //console.log("template.name:" + templatebase.template.name);
+  //console.log("template.attributes.title.data:" + templatebase.template.attributes.title.data);
+  const array1 = templatebase.template['attributes'];
+
+  for (let elem in array1) {  
+    console.log( elem + ".data:" + array1[elem].data )
+    console.log( elem + ".type:" + array1[elem].SCtype )
+  };
+  gulp.src('ITemplate.cs')
+  .pipe(replace('{Template}', templatebase.template.name))
+  .pipe(gulp.dest("out"));
+
+  //var targetApiUrl = settings.apiUrl[env] ? settings.apiUrl[env] : settings.apiUrl['prod'];
+  //if (targetApiUrl) {
+  //  gulp.src(['./www/js/app.js'])
+  //    .pipe(replace('@@apiUrl', targetApiUrl))
+  //    .pipe(gulp.dest(function(file) {
+  //      return file.base;
+  //    }))
+  //}
+});
 
 gulp.task("default", [
-	"copyComponents"
+	"replace"
 ]);
