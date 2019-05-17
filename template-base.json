@@ -1,0 +1,30 @@
+{
+  "template" : {
+    "name" : "Article",
+    "attributes": {
+      "title" : {
+        "data" : "biking",
+        "type" : "Single-Line Text"
+      },
+      "threetakeaways" : {
+        "data" : "<div>threetakeaways</div>",
+        "type" : "Rich Text"
+      }, 
+      "subhead" : {
+        "data" : "<div>subhead</div>",
+        "type" : "Rich Text"
+      },       
+      
+      "keyimage": {
+        "data" : "http://cnn.com",
+        "type" : "Image"
+      },
+      "MainContent": {
+        "data" : "http://cnn.com",
+        "type" : "Rich Text"
+      }
+
+    }
+  }
+}
+
