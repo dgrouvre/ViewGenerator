@@ -6,8 +6,6 @@ namespace Frb.Mpls.Public.Feature.{Template}.Models
     [SitecoreType]
     public interface I{Template} : IGlassBase
     {
-        [SitecoreField]
-        string Title { get; set; }
-
+		{{SitecoreField}}
     }
 }

@@ -235,18 +235,26 @@ gulp.task('copyComponents', function() {
 });
 
 gulp.task('replace', function() {
-  var templatebase = JSON.parse(fs.readFileSync('template-base.json', 'utf8'));
+	var templatebase = JSON.parse(fs.readFileSync('template-base.json', 'utf8'));
+
+	var sitecoreField = fs.readFileSync('SitecoreField.cs', 'utf8');
+	var sitecoreFields = "";
   //console.log("template.name:" + templatebase.template.name);
   //console.log("template.attributes.title.data:" + templatebase.template.attributes.title.data);
   const array1 = templatebase.template['attributes'];
 
-  for (let elem in array1) {  
-    console.log( elem + ".data:" + array1[elem].data )
-    console.log( elem + ".type:" + array1[elem].SCtype )
-  };
+	for (let elem in array1) {
+		var localField = sitecoreField;
+		localField = localField.replace("{{Title}}", elem.toString());
+		//console.log(elem + ".data:" + array1[elem].data);
+		//console.log(elem + ".type:" + array1[elem].SCtype);
+		sitecoreFields = sitecoreFields + localField;
+		console.log(sitecoreFields);
+	};
   gulp.src('ITemplate.cs')
-  .pipe(replace('{Template}', templatebase.template.name))
-  .pipe(gulp.dest("out"));
+	  .pipe(replace('{Template}', templatebase.template.name))
+	  .pipe(replace('{{SitecoreField}}', sitecoreFields))
+	  .pipe(gulp.dest("out"));
 
   //var targetApiUrl = settings.apiUrl[env] ? settings.apiUrl[env] : settings.apiUrl['prod'];
   //if (targetApiUrl) {
