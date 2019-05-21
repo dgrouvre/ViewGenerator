@@ -1,0 +1,7 @@
+{
+    "apiUrl" : {
+      "dev": "https://dev-api-url",
+      "stage": "https://stage-api-url",
+      "prod": "https://prod-api-url"
+    }
+}
