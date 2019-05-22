@@ -15,12 +15,17 @@ function WriteTemplateJson([String] $path, [String] $folderName)
     #New-Item -Path $pathNewFolder -ItemType Directory
     
     $tName = (Get-Item -Path $path | Select-Object -first 1).DisplayName
+    $tID = (Get-Item -Path $path | Select-Object -first 1).ID
+    
     $tName
     $fileFullPath = "{0}\{1}{2}" -f $pathNewFolder, $tName, $fileExt
     
     $tContainer = "{"
     $tLabel = '    "template" : {'
     $tNameLable = '        "name" : "'
+    $tIDLable = '        "id" : "'
+        "{0}{1}{2}{3}" -f $fType, $tID, $fEnd, $fEndComma | Out-File $fileFullPath -Append
+
     $tAttrLable = '        "attributes" : {'
     
     $tFieldLabel1 = '            "'
@@ -42,6 +47,8 @@ function WriteTemplateJson([String] $path, [String] $folderName)
     $tContainer | Out-File $fileFullPath
     $tLabel | Out-File $fileFullPath -Append
     "{0}{1}{2}{3}" -f $tNameLable, $tName, $fEnd, $fEndComma | Out-File $fileFullPath -Append
+    "{0}{1}{2}{3}" -f $tIDLable, $tID, $fEnd, $fEndComma | Out-File $fileFullPath -Append
+    
     $tAttrLable | Out-File $fileFullPath -Append
     
     $i = 0
@@ -55,7 +62,7 @@ function WriteTemplateJson([String] $path, [String] $folderName)
         "{0}{1}{2}{3}" -f $fDisplayName, $_.DisplayName, $fEnd, $fEndComma | Out-File $fileFullPath -Append
         "{0}{1}{2}{3}" -f $fType, $_.Type, $fEnd, $fEndComma | Out-File $fileFullPath -Append
         "{0}{1}{2}" -f $fTitle, $_.Title, $fEnd | Out-File $fileFullPath -Append
-    
+
         $i = [int]$i + [int]1
     
         if ([int]$i -eq $itemCount) {
