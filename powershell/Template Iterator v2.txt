@@ -15,13 +15,15 @@ function WriteTemplateJson([String] $path, [String] $folderName)
     #New-Item -Path $pathNewFolder -ItemType Directory
     
     $tName = (Get-Item -Path $path | Select-Object -first 1).DisplayName
+    $tNameClean = $tName.substring($tName.IndexOf('_') + 1, $tName.length - 1)
+    
     $tID = (Get-Item -Path $path | Select-Object -first 1).ID
-    $fileFullPath = "{0}\{1}{2}" -f $pathNewFolder, $tName, $fileExt
+    $fileFullPath = "{0}\{1}{2}" -f $pathNewFolder, $tNameClean, $fileExt
 
     $fileDeliveryFolderModel =  "C:\inetpub\wwwroot\mfed\Website\data\model\"
     $fileExtModel = ".cs"
     $pathNewFolderModel = "{0}\{1}" -f $fileDeliveryFolderModel, $folderName
-    $fileFullPathModel = "{0}\{1}{2}" -f $pathNewFolderModel, $tName, $fileExtModel
+    $fileFullPathModel = "{0}\{1}{2}" -f $pathNewFolderModel, $tNameClean, $fileExtModel
 ## 
 ##  Begin:Define:Interface File / template
 ## 
@@ -42,10 +44,11 @@ $iContainerEnd = "}"
 $iUsing1
 $iUsing2
 $iBlankLine
-"{0}{1}{2}" -f $iNamespace, $tName, $iNamespaceEnd
+"{0}{1}{2}" -f $iNamespace, $folderName, $iNamespaceEnd
 $iContainer
 $iSitecoreType
-"{0}{1}" -f $iDeclaration, $tName
+
+"{0}{1}" -f $iDeclaration, $tNameClean
 $iInterfaceBegin
 
 
@@ -100,7 +103,20 @@ $iInterfaceBegin
 
     Get-ChildItem -Path $path | Select-Object -first 1 | Get-ChildItem | ForEach-Object {
 
-        $pocoDataType = "       string "
+        if ($_.Type -eq "Datetime")
+        {
+            $pocoDataType = "        string "
+        }elseif ($_.Type -eq "Single-Line Text")
+        {
+            $pocoDataType = "        string "
+        }elseif ($_.Type -eq "Rich Text")
+        {
+            $pocoDataType = "        string "
+        }else {
+            
+        }
+        
+        $_.Type
         $CR = ""
         $iSitecoreField
         $iPropertyDeclare = "{0}{1}{2}" -f $pocoDataType, $_.DisplayName, $iSitecoreFieldEnd
@@ -163,8 +179,13 @@ $metadataFolder = ""
 ## create an interface class of each template
 ## process one template
 ## 
-$itemFullPath = "master:\templates\Feature\Metadata\_MplsMetadata"
-$featureName = "Metadata"
+#$itemFullPath = "master:\templates\Feature\Metadata\_MplsMetadata"
+#$itemFullPath = "master:\templates\Feature\Metadata\_Tagging"
+$itemFullPath = "master:\templates\Feature\Article\_ThreeTakeaways"
+
+#$featureName = "Metadata"
+$featureName = "Article"
+
 WriteTemplateJson  $itemFullPath $featureName
 
 Get-ChildItem -Path $featureFolder | ForEach-Object {
