@@ -16,15 +16,14 @@ function WriteTemplateJson([String] $path, [String] $folderName)
     
     $tName = (Get-Item -Path $path | Select-Object -first 1).DisplayName
     $tID = (Get-Item -Path $path | Select-Object -first 1).ID
-    
-
-
-    #$tName
     $fileFullPath = "{0}\{1}{2}" -f $pathNewFolder, $tName, $fileExt
 
-
+    $fileDeliveryFolderModel =  "C:\inetpub\wwwroot\mfed\Website\data\model\"
+    $fileExtModel = ".cs"
+    $pathNewFolderModel = "{0}\{1}" -f $fileDeliveryFolderModel, $folderName
+    $fileFullPathModel = "{0}\{1}{2}" -f $pathNewFolderModel, $tName, $fileExtModel
 ## 
-## Parts used to create an interface class of each template
+##  Begin:Define:Interface File / template
 ## 
 $iUsing1 = "using Frs.Mpls.Public.Foundation.Orm.Models;"
 $iUsing2 = "using Glass.Mapper.Sc.Configuration.Attributes;"
@@ -35,6 +34,8 @@ $iContainer = "{"
 $iSitecoreType = "    [SitecoreType]"
 $iDeclaration = "    public interface I"
 $iInterfaceBegin = "    {"
+$iSitecoreField = "        [SitecoreField]"
+$iSitecoreFieldEnd = " { get; set; }"
 $iInterfaceEnd = "    }"
 $iContainerEnd = "}"
 
@@ -47,8 +48,10 @@ $iSitecoreType
 "{0}{1}" -f $iDeclaration, $tName
 $iInterfaceBegin
 
-$iInterfaceEnd
-$iContainerEnd
+
+## 
+##  End:Define:Interface File / template
+## 
 
 ## 
 ##  Begin:Define:Json File / template
@@ -83,7 +86,6 @@ $iContainerEnd
 ## 
 ##  Begin:Write:Json File / template
 ## 
-    Write-Host "Write json to file"
     $tContainer | Out-File $fileFullPath
     $tLabel | Out-File $fileFullPath -Append
     "{0}{1}{2}{3}" -f $tNameLable, $tName, $fEnd, $fEndComma | Out-File $fileFullPath -Append
@@ -97,14 +99,26 @@ $iContainerEnd
     $itemCount = ( Get-ChildItem $path | Measure-Object ).Count;
 
     Get-ChildItem -Path $path | Select-Object -first 1 | Get-ChildItem | ForEach-Object {
-    
+
+        $pocoDataType = "       string "
+        $CR = ""
+        $iSitecoreField
+        $iPropertyDeclare = "{0}{1}{2}" -f $pocoDataType, $_.DisplayName, $iSitecoreFieldEnd
+        $iPropertyDeclare
+        $CR
+
 ## 
 ##  Begin:Write:Json File / template
 ##     
-        "{0}{1}{2}" -f $tFieldLabel1, $i, $tFieldLabel2 | Out-File $fileFullPath -Append
-        "{0}{1}{2}{3}" -f $fDisplayName, $_.DisplayName, $fEnd, $fEndComma | Out-File $fileFullPath -Append
-        "{0}{1}{2}{3}" -f $fType, $_.Type, $fEnd, $fEndComma | Out-File $fileFullPath -Append
-        "{0}{1}{2}" -f $fTitle, $_.Title, $fEnd | Out-File $fileFullPath -Append
+        $tFieldStart = "{0}{1}{2}" -f $tFieldLabel1, $i, $tFieldLabel2 
+        $tDisplayNameGroup = "{0}{1}{2}{3}" -f $fDisplayName, $_.DisplayName, $fEnd, $fEndComma
+        $tDataTypeGroup = "{0}{1}{2}{3}" -f $fType, $_.Type, $fEnd, $fEndComma
+        $tDataTitleGroup = "{0}{1}{2}" -f $fTitle, $_.Title, $fEnd
+
+        $tFieldStart | Out-File $fileFullPath -Append
+        $tDisplayNameGroup  | Out-File $fileFullPath -Append
+        $tDataTypeGroup | Out-File $fileFullPath -Append
+        $tDataTitleGroup | Out-File $fileFullPath -Append
 ## 
 ##  End:Write:Json File / template
 ## 
@@ -128,6 +142,16 @@ $iContainerEnd
 ## 
 ##  End:Write:Json File / template
 ## 
+
+## 
+##  Begin:Write:Interface File / template
+##   
+
+$iInterfaceEnd
+$iContainerEnd
+## 
+##  End:Write:Interface File / template
+##   
 
 } # end function WriteTemplateJson([String] $path, [String] $folderName)
 
