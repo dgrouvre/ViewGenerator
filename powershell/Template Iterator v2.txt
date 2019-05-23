@@ -31,14 +31,27 @@ $iUsing2 = "using Glass.Mapper.Sc.Configuration.Attributes;"
 $iBlankLine = ""
 $iNamespace = "namespace Frb.Mpls.Public.Feature."
 $iNamespaceEnd = ".Models"
+$iContainer = "{"
+$iSitecoreType = "    [SitecoreType]"
+$iDeclaration = "    public interface I"
+$iInterfaceBegin = "    {"
+$iInterfaceEnd = "    }"
+$iContainerEnd = "}"
 
-$Using1
+$iUsing1
 $iUsing2
 $iBlankLine
 "{0}{1}{2}" -f $iNamespace, $tName, $iNamespaceEnd
+$iContainer
+$iSitecoreType
+"{0}{1}" -f $iDeclaration, $tName
+$iInterfaceBegin
+
+$iInterfaceEnd
+$iContainerEnd
 
 ## 
-## Parts used to create json file of each template
+##  Begin:Define:Json File / template
 ## 
     $tContainer = "{"
     $tLabel = '    "template" : {'
@@ -62,45 +75,73 @@ $iBlankLine
     $tAttrEnd = "        }"
     $tEnd = "    }"
     $tContainerEnd = "}"
-    
+
+## 
+##  End:Define:Json File / template
+## 
+
+## 
+##  Begin:Write:Json File / template
+## 
     Write-Host "Write json to file"
     $tContainer | Out-File $fileFullPath
     $tLabel | Out-File $fileFullPath -Append
     "{0}{1}{2}{3}" -f $tNameLable, $tName, $fEnd, $fEndComma | Out-File $fileFullPath -Append
     "{0}{1}{2}{3}" -f $tIDLable, $tID, $fEnd, $fEndComma | Out-File $fileFullPath -Append
-    
     $tAttrLable | Out-File $fileFullPath -Append
+## 
+##  End:Write:Json File / template
+## 
     
     $i = 0
     $itemCount = ( Get-ChildItem $path | Measure-Object ).Count;
 
     Get-ChildItem -Path $path | Select-Object -first 1 | Get-ChildItem | ForEach-Object {
     
-    
+## 
+##  Begin:Write:Json File / template
+##     
         "{0}{1}{2}" -f $tFieldLabel1, $i, $tFieldLabel2 | Out-File $fileFullPath -Append
-    
         "{0}{1}{2}{3}" -f $fDisplayName, $_.DisplayName, $fEnd, $fEndComma | Out-File $fileFullPath -Append
         "{0}{1}{2}{3}" -f $fType, $_.Type, $fEnd, $fEndComma | Out-File $fileFullPath -Append
         "{0}{1}{2}" -f $fTitle, $_.Title, $fEnd | Out-File $fileFullPath -Append
-
+## 
+##  End:Write:Json File / template
+## 
         $i = [int]$i + [int]1
-    
+
         if ([int]$i -eq $itemCount) {
-            $tFieldGroupEnd | Out-File $fileFullPath -Append
+            $fFieldFinish = $tFieldGroupEnd 
         } Else {
-            "{0}{1}" -f $tFieldGroupEnd, $fEndComma | Out-File $fileFullPath -Append
+            $fFieldFinish = "{0}{1}" -f $tFieldGroupEnd, $fEndComma 
         }
-        
+##  Json File / template::Write Field Finish
+        $fFieldFinish | Out-File $fileFullPath -Append
     }
 
+## 
+##  Begin:Write:Json File / template
+##   
     $tAttrEnd | Out-File $fileFullPath -Append
     $tEnd | Out-File $fileFullPath -Append
     $tContainerEnd | Out-File $fileFullPath -Append
+## 
+##  End:Write:Json File / template
+## 
 
 } # end function WriteTemplateJson([String] $path, [String] $folderName)
 
 $featureFolder = "master:\templates\Feature" 
 
+$metadataFolder = ""
+## 
+
+## create an interface class of each template
+## process one template
+## 
+$itemFullPath = "master:\templates\Feature\Metadata\_MplsMetadata"
+$featureName = "Metadata"
+WriteTemplateJson  $itemFullPath $featureName
 
 Get-ChildItem -Path $featureFolder | ForEach-Object {
     $featureName = $_.DisplayName
@@ -109,6 +150,6 @@ Get-ChildItem -Path $featureFolder | ForEach-Object {
     Get-ChildItem -Path $tParentFullPath | ForEach-Object {
         $tName = $_.DisplayName
         $itemFullPath = "{0}\{1}{2}" -f $tParentFullPath, $tName, $fileExt
-        WriteTemplateJson  $itemFullPath $featureName
+        #WriteTemplateJson  $itemFullPath $featureName
     }
 }
