@@ -24,11 +24,16 @@ function WriteTemplateJson([String] $path, [String] $folderName)
     $fileExtModel = ".cs"
     $pathNewFolderModel = "{0}\{1}" -f $fileDeliveryFolderModel, $folderName
     $fileFullPathModel = "{0}\{1}{2}" -f $pathNewFolderModel, $tNameClean, $fileExtModel
+
+    New-Item -Path $pathNewFolderModel -ItemType Directory
+
+
 ## 
 ##  Begin:Define:Interface File / template
 ## 
 $iUsing1 = "using Frs.Mpls.Public.Foundation.Orm.Models;"
 $iUsing2 = "using Glass.Mapper.Sc.Configuration.Attributes;"
+$iUsing3 = "using Glass.Mapper.Sc.Fields;"
 $iBlankLine = ""
 $iNamespace = "namespace Frb.Mpls.Public.Feature."
 $iNamespaceEnd = ".Models"
@@ -41,15 +46,16 @@ $iSitecoreFieldEnd = " { get; set; }"
 $iInterfaceEnd = "    }"
 $iContainerEnd = "}"
 
-$iUsing1
-$iUsing2
-$iBlankLine
-"{0}{1}{2}" -f $iNamespace, $folderName, $iNamespaceEnd
-$iContainer
-$iSitecoreType
+$iUsing1 | Out-File $fileFullPathModel -Append
+$iUsing2 | Out-File $fileFullPathModel -Append
+$iUsing3 | Out-File $fileFullPathModel -Append
+$iBlankLine | Out-File $fileFullPathModel -Append
+"{0}{1}{2}" -f $iNamespace, $folderName, $iNamespaceEnd | Out-File $fileFullPathModel -Append
+$iContainer | Out-File $fileFullPathModel -Append
+$iSitecoreType | Out-File $fileFullPathModel -Append
 
-"{0}{1}" -f $iDeclaration, $tNameClean
-$iInterfaceBegin
+"{0}{1}" -f $iDeclaration, $tNameClean | Out-File $fileFullPathModel -Append
+$iInterfaceBegin | Out-File $fileFullPathModel -Append
 
 
 ## 
@@ -112,16 +118,28 @@ $iInterfaceBegin
         }elseif ($_.Type -eq "Rich Text")
         {
             $pocoDataType = "        string "
+        }elseif ($_.Type -eq "Multi-Line Text")
+        {
+            $pocoDataType = "        string "
+        }elseif ($_.Type -eq "General Link")
+        {
+            $pocoDataType = "        Link "
+        }elseif ($_.Type -eq "Checkbox")
+        {
+            $pocoDataType = "        bool "
+        }elseif ($_.Type -eq "Image")
+        {
+            $pocoDataType = "        Image "
         }else {
             
         }
         
-        $_.Type
-        $CR = ""
-        $iSitecoreField
-        $iPropertyDeclare = "{0}{1}{2}" -f $pocoDataType, $_.DisplayName, $iSitecoreFieldEnd
-        $iPropertyDeclare
-        $CR
+        #$_.Type
+        $CR = "" | Out-File $fileFullPathModel -Append
+        $iSitecoreField | Out-File $fileFullPathModel -Append
+        $iPropertyDeclare = "{0}{1}{2}" -f $pocoDataType, $_.DisplayName, $iSitecoreFieldEnd | Out-File $fileFullPathModel -Append
+        $iPropertyDeclare | Out-File $fileFullPathModel -Append
+        $CR | Out-File $fileFullPathModel -Append
 
 ## 
 ##  Begin:Write:Json File / template
@@ -163,8 +181,8 @@ $iInterfaceBegin
 ##  Begin:Write:Interface File / template
 ##   
 
-$iInterfaceEnd
-$iContainerEnd
+$iInterfaceEnd | Out-File $fileFullPathModel -Append
+$iContainerEnd | Out-File $fileFullPathModel -Append
 ## 
 ##  End:Write:Interface File / template
 ##   
@@ -181,10 +199,16 @@ $metadataFolder = ""
 ## 
 #$itemFullPath = "master:\templates\Feature\Metadata\_MplsMetadata"
 #$itemFullPath = "master:\templates\Feature\Metadata\_Tagging"
-$itemFullPath = "master:\templates\Feature\Article\_ThreeTakeaways"
+#$itemFullPath = "master:\templates\Feature\Metadata\_SEOMetadata"
+
+#$itemFullPath = "master:\templates\Feature\Article\_ThreeTakeaways"
+#$itemFullPath = "master:\templates\Feature\Article\_ResearchPaper"
+
+$itemFullPath = "master:\templates\Feature\PageContent\_KeyImage"
 
 #$featureName = "Metadata"
-$featureName = "Article"
+#$featureName = "Article"
+$featureName = "PageContent"
 
 WriteTemplateJson  $itemFullPath $featureName
 
