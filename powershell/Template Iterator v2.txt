@@ -1,0 +1,114 @@
+Write-Host ""
+Write-Host "Script:Template Iterator ::Purpose:Get template information." -BackgroundColor Black -ForegroundColor Yellow
+Write-Host ""
+
+
+function WriteTemplateJson([String] $path, [String] $folderName)
+{
+    Write-Host $path -ForegroundColor "Green"
+
+    $fileDeliveryFolder =  "C:\inetpub\wwwroot\mfed\Website\data\json\"
+    $fileExt = ".json"
+    $pathNewFolder = "{0}\{1}" -f $fileDeliveryFolder, $folderName
+    
+    #Tighten-up: have this delete current directories and remake
+    #New-Item -Path $pathNewFolder -ItemType Directory
+    
+    $tName = (Get-Item -Path $path | Select-Object -first 1).DisplayName
+    $tID = (Get-Item -Path $path | Select-Object -first 1).ID
+    
+
+
+    #$tName
+    $fileFullPath = "{0}\{1}{2}" -f $pathNewFolder, $tName, $fileExt
+
+
+## 
+## Parts used to create an interface class of each template
+## 
+$iUsing1 = "using Frs.Mpls.Public.Foundation.Orm.Models;"
+$iUsing2 = "using Glass.Mapper.Sc.Configuration.Attributes;"
+$iBlankLine = ""
+$iNamespace = "namespace Frb.Mpls.Public.Feature."
+$iNamespaceEnd = ".Models"
+
+$Using1
+$iUsing2
+$iBlankLine
+"{0}{1}{2}" -f $iNamespace, $tName, $iNamespaceEnd
+
+## 
+## Parts used to create json file of each template
+## 
+    $tContainer = "{"
+    $tLabel = '    "template" : {'
+    $tNameLable = '        "name" : "'
+    $tIDLable = '        "id" : "'
+        "{0}{1}{2}{3}" -f $fType, $tID, $fEnd, $fEndComma | Out-File $fileFullPath -Append
+
+    $tAttrLable = '        "attributes" : {'
+    
+    $tFieldLabel1 = '            "'
+    $tFieldLabel2 = '" : {'
+    
+    $fDisplayName = '               "DisplayName" : "'
+    $fEnd = '"'
+    $fEndComma = ','
+    $fType = '                "Type" : "'
+    $fTitle = '                "Title" : "'
+    $tFieldGroupEnd = "            }"    
+    $tAttrEnd = "            }"    
+    
+    $tAttrEnd = "        }"
+    $tEnd = "    }"
+    $tContainerEnd = "}"
+    
+    Write-Host "Write json to file"
+    $tContainer | Out-File $fileFullPath
+    $tLabel | Out-File $fileFullPath -Append
+    "{0}{1}{2}{3}" -f $tNameLable, $tName, $fEnd, $fEndComma | Out-File $fileFullPath -Append
+    "{0}{1}{2}{3}" -f $tIDLable, $tID, $fEnd, $fEndComma | Out-File $fileFullPath -Append
+    
+    $tAttrLable | Out-File $fileFullPath -Append
+    
+    $i = 0
+    $itemCount = ( Get-ChildItem $path | Measure-Object ).Count;
+
+    Get-ChildItem -Path $path | Select-Object -first 1 | Get-ChildItem | ForEach-Object {
+    
+    
+        "{0}{1}{2}" -f $tFieldLabel1, $i, $tFieldLabel2 | Out-File $fileFullPath -Append
+    
+        "{0}{1}{2}{3}" -f $fDisplayName, $_.DisplayName, $fEnd, $fEndComma | Out-File $fileFullPath -Append
+        "{0}{1}{2}{3}" -f $fType, $_.Type, $fEnd, $fEndComma | Out-File $fileFullPath -Append
+        "{0}{1}{2}" -f $fTitle, $_.Title, $fEnd | Out-File $fileFullPath -Append
+
+        $i = [int]$i + [int]1
+    
+        if ([int]$i -eq $itemCount) {
+            $tFieldGroupEnd | Out-File $fileFullPath -Append
+        } Else {
+            "{0}{1}" -f $tFieldGroupEnd, $fEndComma | Out-File $fileFullPath -Append
+        }
+        
+    }
+
+    $tAttrEnd | Out-File $fileFullPath -Append
+    $tEnd | Out-File $fileFullPath -Append
+    $tContainerEnd | Out-File $fileFullPath -Append
+
+} # end function WriteTemplateJson([String] $path, [String] $folderName)
+
+$featureFolder = "master:\templates\Feature" 
+
+
+Get-ChildItem -Path $featureFolder | ForEach-Object {
+    $featureName = $_.DisplayName
+    $tParentFullPath = "{0}\{1}" -f $featureFolder,  $featureName
+    
+    Get-ChildItem -Path $tParentFullPath | ForEach-Object {
+        $tName = $_.DisplayName
+        $itemFullPath = "{0}\{1}{2}" -f $tParentFullPath, $tName, $fileExt
+        WriteTemplateJson  $itemFullPath $featureName
+    }
+}

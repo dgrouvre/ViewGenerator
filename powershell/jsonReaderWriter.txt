@@ -1,0 +1,99 @@
+$employees = '{"employees":[
+    {"firstName":"John", "lastName":"Doe"},
+    {"firstName":"Anna", "lastName":"Smith"},
+    {"firstName":"Peter", "lastName":"Jones"}
+]}'
+
+$employees
+
+$employeesobj = ConvertFrom-Json -InputObject $employees
+$employeesobj
+
+
+
+$folderName = "testfolder"
+    $tName= "testItem"
+
+
+
+
+
+
+
+    Write-Host $path -ForegroundColor "Green"
+    $fileDeliveryFolder =  "C:\inetpub\wwwroot\mfed\Website\data\json\"
+    $fileExt = ".json"
+    $pathNewFolder = "{0}\{1}" -f $fileDeliveryFolder, $folderName
+
+
+    $fileFullPath = "{0}{1}{2}" -f $fileDeliveryFolder, $tName, $fileExt
+    
+    
+    $fileFullPath
+
+$employeesobj | ConvertTo-Json  | Out-File $fileFullPath -Append
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$tName = "tName"
+$tID = "tID"
+
+    $tContainer = "{"
+    $tLabel = '    "template" : {'
+    $tNameLable = '        "name" : "'
+    $tIDLable = '        "id" : "'
+#        "{0}{1}{2}{3}" -f $fType, $tID, $fEnd, $fEndComma
+
+    $tAttrLable = '        "attributes" : {'
+    
+    $tFieldLabel1 = '            "'
+    $tFieldLabel2 = '" : {'
+    
+    $fDisplayName = '               "DisplayName" : "'
+    $fEnd = '"'
+    $fEndComma = ','
+    $fType = '                "Type" : "'
+    $fTitle = '                "Title" : "'
+    $tFieldGroupEnd = "            }"    
+    $tAttrEnd = "            }"    
+    
+    $tAttrEnd = "        }"
+    $tEnd = "    }"
+    $tContainerEnd = "}"
+
+#    $tContainer 
+#    $tLabel 
+#    "{0}{1}{2}{3}" -f $tNameLable, $tName, $fEnd, $fEndComma 
+#    "{0}{1}{2}" -f $tIDLable, $tID, $fEnd
+#$tEnd
+#$tContainerEnd
+
+#$template = "{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}" -f $tContainer, $tLabel, $tNameLable, $tName, $fEnd, $fEndComma, $tIDLable, $tID, $fEnd, $tEnd, $tContainerEnd
+#$template
+
+
+#$templateobj = ConvertFrom-Json -InputObject $template
+
