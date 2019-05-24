@@ -107,10 +107,12 @@ $iInterfaceBegin | Out-File $fileFullPathModel -Append
     $i = 0
     $itemCount = ( Get-ChildItem $path | Measure-Object ).Count;
 
-    Write-Host "path=" $path
+    #Write-Host "path=" $path
 
     Get-ChildItem -Path $path | Where-Object  {$_.Name -ne "__Standard Values"} | Select-Object -first 1 | Get-ChildItem  | ForEach-Object {
         Write-Host "_.Name=" $_.Name
+        Write-Host "_._Source=" $_._Source
+        Write-Host "_.Type=" $_.Type
         if ($_.Type -eq "Datetime")
         {
             $pocoDataType = "        string "
