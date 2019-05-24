@@ -144,9 +144,14 @@ $iInterfaceBegin | Out-File $fileFullPathModel -Append
                 $guidStart = [int]$_._Source.IndexOf('TemplateFilter') + [int]15
                 $guidLength = 38
                 $templateId = $_._Source.Substring($guidStart, $guidLength)
-#                Write-Host "TemplateFilter:Substring'=" $_._Source.Substring($testadd, $guidLength)
-#                Write-Host "templateId'=" $templateId
+#                Write-Host "templateId=" $templateId
                 $pageName = (Get-Item -Path "master:" -ID  $templateId).Name
+# Get an item
+#$item = Get-Item -Path "master:" -ID  $templateId
+
+# Get the direct template for the item, then get all base templates of that template
+#$baseTemplates = [Sitecore.Data.Managers.TemplateManager]::GetTemplate($item).GetBaseTemplates();
+
                 $pageType = $pageName.length - $pageName.IndexOf('Page') + 2
                 $pocoIEnumerableType = $pageName.substring(0,$pageType)
             }
@@ -252,15 +257,15 @@ Get-ChildItem -Path $featureFolder | ForEach-Object {
         #Write-Host "featureName=" $featureName
         #$tParentFullPath
         Get-ChildItem -Path $tParentFullPath | ForEach-Object {
-            Write-Host "_.Name=" $_.Name
-            $tName = $_.DisplayName
+#            Write-Host "_.Name=" $_.Name
+#            $tName = $_.DisplayName
             $itemFullPath = "{0}\{1}{2}" -f $tParentFullPath, $tName, $fileExt
             #Write-Host "itemFullPath=" $itemFullPath
             $tNameClean = $tName.substring($tName.IndexOf('_') + 1, $tName.length - 1)
             if ($tName.IndexOf('_') -eq 0) {
                 #only process files with _ in front of them
-                Write-Host "tName=" $tName
-                WriteTemplateJson  $itemFullPath $featureName
+#                Write-Host "tName=" $tName
+                #WriteTemplateJson  $itemFullPath $featureName
             }else {}
             #$tNameClean
 #            if ($tNameClean -eq "Address")
@@ -276,3 +281,23 @@ Get-ChildItem -Path $featureFolder | ForEach-Object {
         
     }
 }
+
+##
+##  Create Page Types
+##
+
+# Get an item
+$templateId = "{279C7395-E799-43D9-9A8E-250FFAE7102F}"
+$item = Get-Item -Path "master:" -ID  $templateId
+#$item.Name
+$iTem."__Base template".split("|") | ForEach-Object {
+    
+    $iteml2 = Get-Item -Path "master:" -ID  $_
+    $tName = $iteml2.Name
+    $tName.IndexOf('_')
+    $tNameClean = $tName.substring($tName.IndexOf('_') + 1, $tName.length - 1)
+    $tNameClean
+}
+# Get the direct template for the item, then get all base templates of that template
+#$baseTemplates = [Sitecore.Data.Managers.TemplateManager]::GetTemplate($item).GetBaseTemplates();
+#$baseTemplates
