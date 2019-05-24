@@ -10,10 +10,7 @@ function WriteTemplateJson([String] $path, [String] $folderName)
     $fileDeliveryFolder =  "C:\inetpub\wwwroot\mfed\Website\data\json\"
     $fileExt = ".json"
     $pathNewFolder = "{0}\{1}" -f $fileDeliveryFolder, $folderName
-    
-    #Tighten-up: have this delete current directories and remake
-    #New-Item -Path $pathNewFolder -ItemType Directory
-    
+
     $tName = (Get-Item -Path $path | Select-Object -first 1).DisplayName
     $tNameClean = $tName.substring($tName.IndexOf('_') + 1, $tName.length - 1)
     
@@ -22,10 +19,13 @@ function WriteTemplateJson([String] $path, [String] $folderName)
 
     $fileDeliveryFolderModel =  "C:\inetpub\wwwroot\mfed\Website\data\model\"
     $fileExtModel = ".cs"
-    $pathNewFolderModel = "{0}\{1}" -f $fileDeliveryFolderModel, $folderName
+    $pathNewFolderModel = "{0}{1}" -f $fileDeliveryFolderModel, $folderName
     $fileFullPathModel = "{0}\I{1}{2}" -f $pathNewFolderModel, $tNameClean, $fileExtModel
-
-    #New-Item -Path $pathNewFolderModel -ItemType Directory
+    
+    #Write-Host "pathNewFolderModel=" $pathNewFolderModel
+    if (Test-Path $pathNewFolderModel){}else{
+        New-Item -Path $pathNewFolderModel -ItemType Directory
+    }
 
 
 ## 
@@ -107,8 +107,10 @@ $iInterfaceBegin | Out-File $fileFullPathModel -Append
     $i = 0
     $itemCount = ( Get-ChildItem $path | Measure-Object ).Count;
 
-    Get-ChildItem -Path $path | Select-Object -first 1 | Get-ChildItem | ForEach-Object {
+    Write-Host "path=" $path
 
+    Get-ChildItem -Path $path | Where-Object  {$_.Name -ne "__Standard Values"} | Select-Object -first 1 | Get-ChildItem  | ForEach-Object {
+        Write-Host "_.Name=" $_.Name
         if ($_.Type -eq "Datetime")
         {
             $pocoDataType = "        string "
@@ -215,26 +217,28 @@ $featureName = "PageContent"
 Get-ChildItem -Path $featureFolder | ForEach-Object {
     $featureName = $_.DisplayName
     $tParentFullPath = "{0}\{1}" -f $featureFolder,  $featureName
-    $featureFolder
+    #Write-Host "tParentFullPath=" $tParentFullPath
+    #Write-Host "featureFolder=" $featureFolder
     if (
-        $featureName -eq "Article" -Or
-        $featureName -eq "BeigeBook" -Or
-        $featureName -eq "Metadata" -Or
-        $featureName -eq "Person" -Or
-        $featureName -eq "PageContent"# -Or
-        $featureName -eq "Topic" 
+        $featureName -eq "Article"# -Or
+#        $featureName -eq "BeigeBook" -Or
+#        $featureName -eq "Metadata" -Or
+#        $featureName -eq "Person" -Or
+#        $featureName -eq "PageContent" -Or
+#        $featureName -eq "Topic" 
     )
     {
-        $featureName
+        #Write-Host "featureName=" $featureName
         #$tParentFullPath
         Get-ChildItem -Path $tParentFullPath | ForEach-Object {
+            Write-Host "_.Name=" $_.Name
             $tName = $_.DisplayName
             $itemFullPath = "{0}\{1}{2}" -f $tParentFullPath, $tName, $fileExt
-            $itemFullPath
+            #Write-Host "itemFullPath=" $itemFullPath
             $tNameClean = $tName.substring($tName.IndexOf('_') + 1, $tName.length - 1)
             if ($tName.IndexOf('_') -eq 0) {
                 #only process files with _ in front of them
-                $tName
+                Write-Host "tName=" $tName
                 WriteTemplateJson  $itemFullPath $featureName
             }else {}
             #$tNameClean
