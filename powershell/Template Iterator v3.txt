@@ -34,6 +34,7 @@ function WriteTemplateJson([String] $path, [String] $folderName)
 $iUsing1 = "using Frs.Mpls.Public.Foundation.Orm.Models;"
 $iUsing2 = "using Glass.Mapper.Sc.Configuration.Attributes;"
 $iUsing3 = "using Glass.Mapper.Sc.Fields;"
+$iUsing4 = "using System.Collections.Generic;"
 $iBlankLine = ""
 $iNamespace = "namespace Frb.Mpls.Public.Feature."
 $iNamespaceEnd = ".Models"
@@ -49,6 +50,7 @@ $iContainerEnd = "}"
 $iUsing1 | Out-File $fileFullPathModel -Append
 $iUsing2 | Out-File $fileFullPathModel -Append
 $iUsing3 | Out-File $fileFullPathModel -Append
+$iUsing4 | Out-File $fileFullPathModel -Append
 $iBlankLine | Out-File $fileFullPathModel -Append
 "{0}{1}{2}" -f $iNamespace, $folderName, $iNamespaceEnd | Out-File $fileFullPathModel -Append
 $iContainer | Out-File $fileFullPathModel -Append
@@ -110,9 +112,6 @@ $iInterfaceBegin | Out-File $fileFullPathModel -Append
     #Write-Host "path=" $path
 
     Get-ChildItem -Path $path | Where-Object  {$_.Name -ne "__Standard Values"} | Select-Object -first 1 | Get-ChildItem  | ForEach-Object {
-        Write-Host "_.Name=" $_.Name
-        Write-Host "_._Source=" $_._Source
-        Write-Host "_.Type=" $_.Type
         if ($_.Type -eq "Datetime")
         {
             $pocoDataType = "        string "
@@ -134,8 +133,27 @@ $iInterfaceBegin | Out-File $fileFullPathModel -Append
         }elseif ($_.Type -eq "Image")
         {
             $pocoDataType = "        Image "
+        }elseif ($_.Type -eq "Multilist with Search")
+        {
+#            Write-Host "_.Name=" $_.Name
+#            Write-Host "_._Source=" $_._Source
+#            Write-Host "_.Type=" $_.Type
+            if ($_._Source.IndexOf('TemplateFilter') -lt 0)
+            {
+            }else{
+                $guidStart = [int]$_._Source.IndexOf('TemplateFilter') + [int]15
+                $guidLength = 38
+                $templateId = $_._Source.Substring($guidStart, $guidLength)
+#                Write-Host "TemplateFilter:Substring'=" $_._Source.Substring($testadd, $guidLength)
+                Write-Host "templateId'=" $templateId
+                $debugDisplay = (Get-Item -Path "master:" -ID  $templateId).Name
+                Write-Host "debugDisplay=" $debugDisplay
+            }
+            $pocoDataTypeStart = "        IEnerable<"
+            $pocoDataTypeEnd = ">"
+            $pocoDataType = "{0}{1}{2}" -f $pocoDataTypeStart, $debugDisplay, $pocoDataTypeEnd
         }else {
-            
+
         }
         
         #$_.Type
