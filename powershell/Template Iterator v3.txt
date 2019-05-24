@@ -221,6 +221,7 @@ Get-ChildItem -Path $featureFolder | ForEach-Object {
         $featureName -eq "BeigeBook" -Or
         $featureName -eq "Metadata" -Or
         $featureName -eq "Person" -Or
+        $featureName -eq "PageContent"# -Or
         $featureName -eq "Topic" 
     )
     {
