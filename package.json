@@ -4,7 +4,7 @@
 	"description": "Sitecore Helix for Dependencies",
 	"main": "gulpfile.js",
 	"dependencies": {
-		"async": "^1.5.2",
+		"async": "^2.6.4",
 		"fs": "0.0.1-security",
 		"glob": "^7.0.3",
 		"gulp": "^3.9.0",
